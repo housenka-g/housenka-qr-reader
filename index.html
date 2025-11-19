@@ -41,7 +41,7 @@
           result.textContent = "読み取り成功：" + code.data;
           try {
             const url = new URL(code.data);
-            url.searchParams.set("使用店舗2", storeId);
+            url.searchParams.set("store_id", storeId);
             window.location.href = url.toString();
           } catch (e) {
             result.textContent = "無効なURLです";

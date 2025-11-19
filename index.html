@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>QRコード読み取り（店舗ID付加）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    video, canvas { width: 100%; max-width: 480px; }
+    #result { margin-top: 1em; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>QRコードを読み取ってください</h2>
+  <video id="video" autoplay muted playsinline></video>
+  <canvas id="canvas" hidden></canvas>
+  <div id="result">読み取り中...</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+  <script>
+    const storeId = "STORE001"; // この端末専用の店舗ID
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const result = document.getElementById("result");
+    const ctx = canvas.getContext("2d");
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+      .then(stream => {
+        video.srcObject = stream;
+        video.setAttribute("playsinline", true);
+        requestAnimationFrame(scan);
+      });
+
+    function scan() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, canvas.width, canvas.height);
+        if (code) {
+          result.textContent = "読み取り成功：" + code.data;
+          try {
+            const url = new URL(code.data);
+            url.searchParams.set("store_id", storeId);
+            window.location.href = url.toString();
+          } catch (e) {
+            result.textContent = "無効なURLです";
+          }
+          return;
+        }
+      }
+      requestAnimationFrame(scan);
+    }
+  </script>
+</body>
+</html>

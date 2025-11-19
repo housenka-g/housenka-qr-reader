@@ -17,7 +17,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script>
-    const storeId = "STORE001"; // この端末専用の店舗ID
+    const storeId = "食堂1"; // この端末専用の店舗ID
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
     const result = document.getElementById("result");
@@ -41,7 +41,7 @@
           result.textContent = "読み取り成功：" + code.data;
           try {
             const url = new URL(code.data);
-            url.searchParams.set("store_id", storeId);
+            url.searchParams.set("使用店舗2", storeId);
             window.location.href = url.toString();
           } catch (e) {
             result.textContent = "無効なURLです";
